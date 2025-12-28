@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@swc/helpers": "^0.5.18",
     "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "googleapis": "^169.0.0",
