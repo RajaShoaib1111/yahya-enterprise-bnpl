@@ -1,4 +1,13 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { useInView } from 'framer-motion';
+
 export default function Statistics() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+
   const stats = [
     {
       number: '10',
@@ -43,26 +52,44 @@ export default function Statistics() {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white relative z-10" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl sm:text-4xl font-bold text-[var(--navy)] mb-4">
             Trusted by Thousands
           </h2>
           <p className="text-lg text-[var(--charcoal)] max-w-2xl mx-auto">
             A decade of excellence in providing flexible payment solutions
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-gradient-to-br from-[var(--green-light)]/10 to-[var(--green-dark)]/10 rounded-xl p-8 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[var(--green-light)]"
+              className="bg-gradient-to-br from-[var(--green-light)]/10 to-[var(--green-dark)]/10 rounded-xl p-8 text-center border border-[var(--green-light)]"
+              initial={{ opacity: 0, y: 50 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: '0 25px 50px -12px rgba(45, 106, 79, 0.25)',
+                rotateY: 5,
+              }}
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[var(--green-light)] to-[var(--green-dark)] text-white mb-4">
+              <motion.div
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[var(--green-light)] to-[var(--green-dark)] text-white mb-4"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+              >
                 {stat.icon}
-              </div>
+              </motion.div>
               <div className="text-4xl sm:text-5xl font-bold text-[var(--navy)] mb-2">
                 {stat.number}
                 <span className="text-[var(--gold)]">{stat.suffix}</span>
@@ -70,7 +97,7 @@ export default function Statistics() {
               <div className="text-[var(--charcoal)] font-medium">
                 {stat.label}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
