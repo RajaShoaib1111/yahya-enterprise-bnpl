@@ -11,6 +11,10 @@ export interface CalculatorConfig {
   profitRatioRules: ProfitRatioRule[];
   minProductPrice: number;
   maxProductPrice: number;
+  minDownPayment: number;
+  maxDownPayment: number;
+  minDuration: number;
+  maxDuration: number;
 }
 
 export interface ProfitRatioRule {
@@ -26,6 +30,7 @@ export interface CalculationResult {
   remainingBalance: number;
   durationMonths: number;
   profitRatio: number;
+  profitRatioApplied: number;
   profitAmount: number;
   totalWithProfit: number;
   monthlyPayment: number;
@@ -37,10 +42,10 @@ export interface CalculationResult {
  * Modify these values to change calculator behavior
  */
 export const defaultCalculatorConfig: CalculatorConfig = {
-  // Available duration options in months
+  // Available duration options in months (suggested presets)
   durationOptions: [3, 6, 9, 12],
 
-  // Available down payment percentages
+  // Available down payment percentages (suggested presets)
   downPaymentOptions: [15, 25, 35, 50],
 
   // Profit ratio rules based on duration
@@ -62,6 +67,14 @@ export const defaultCalculatorConfig: CalculatorConfig = {
   // Price constraints
   minProductPrice: 100,
   maxProductPrice: 1000000,
+
+  // Down payment range (flexible)
+  minDownPayment: 0,
+  maxDownPayment: 50,
+
+  // Duration range in months (flexible)
+  minDuration: 1,
+  maxDuration: 24,
 };
 
 /**
@@ -112,12 +125,12 @@ export function calculateInstallment(
     throw new Error(`Product price must be between ${config.minProductPrice} and ${config.maxProductPrice}`);
   }
 
-  if (!config.downPaymentOptions.includes(downPaymentPercentage)) {
-    throw new Error(`Down payment must be one of: ${config.downPaymentOptions.join(', ')}%`);
+  if (downPaymentPercentage < config.minDownPayment || downPaymentPercentage > config.maxDownPayment) {
+    throw new Error(`Down payment must be between ${config.minDownPayment}% and ${config.maxDownPayment}%`);
   }
 
-  if (!config.durationOptions.includes(durationMonths)) {
-    throw new Error(`Duration must be one of: ${config.durationOptions.join(', ')} months`);
+  if (durationMonths < config.minDuration || durationMonths > config.maxDuration) {
+    throw new Error(`Duration must be between ${config.minDuration} and ${config.maxDuration} months`);
   }
 
   // Step 1: Calculate down payment
@@ -148,6 +161,7 @@ export function calculateInstallment(
     remainingBalance: Number(remainingBalance.toFixed(2)),
     durationMonths,
     profitRatio,
+    profitRatioApplied: profitRatio,
     profitAmount: Number(profitAmount.toFixed(2)),
     totalWithProfit: Number(totalWithProfit.toFixed(2)),
     monthlyPayment: Number(monthlyPayment.toFixed(2)),
