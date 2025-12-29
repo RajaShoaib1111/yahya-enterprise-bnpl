@@ -15,8 +15,26 @@ export default function CalculatorPage() {
   const termsInView = useInView(termsRef, { once: true, amount: 0.3 });
   const faqInView = useInView(faqRef, { once: true, amount: 0.3 });
 
-  // Calculate results in real-time
-  const calculation = calculateInstallment(productPrice, downPaymentPercentage, durationMonths);
+  // Calculate results in real-time with error handling
+  let calculation;
+  try {
+    calculation = calculateInstallment(productPrice, downPaymentPercentage, durationMonths);
+  } catch (error) {
+    // If calculation fails (e.g., invalid input), use default values
+    calculation = {
+      productPrice,
+      downPaymentPercentage,
+      downPaymentAmount: 0,
+      remainingBalance: 0,
+      durationMonths,
+      profitRatio: 0,
+      profitRatioApplied: 0,
+      profitAmount: 0,
+      totalWithProfit: 0,
+      monthlyPayment: 0,
+      totalPayable: 0,
+    };
+  }
 
   const faqs = [
     {
@@ -94,13 +112,22 @@ export default function CalculatorPage() {
                     <input
                       type="number"
                       value={productPrice}
-                      onChange={(e) => setProductPrice(Number(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        // Allow any number input, validation happens in calculateInstallment
+                        setProductPrice(value >= 0 ? value : 0);
+                      }}
                       className="w-full pl-10 pr-4 py-4 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--green-dark)] focus:border-transparent transition-all"
                       placeholder="10000"
-                      min="0"
+                      min="100"
                       step="100"
                     />
                   </div>
+                  {productPrice < 100 && productPrice > 0 && (
+                    <p className="mt-2 text-sm text-red-600">
+                      Minimum product price is $100
+                    </p>
+                  )}
                   <input
                     type="range"
                     value={productPrice}
